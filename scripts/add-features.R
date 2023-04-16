@@ -280,18 +280,18 @@ handle_contextual_diacritics <- function(vec, base_glyph) {
     }
     # downtack
     else if (vec$GlyphID %in% "031E") {
-        if (base_glyph %in% c("ŋ", "d")) {
+        if (base_glyph %in% c("ŋ", "d", "b", "ɖ", "ɡ")) {
             # downtack turns stop/nasal into "non-continuant fricative"
             vec$delayedRelease <- "+"
         }
-        else if (base_glyph %in% c("β", "ð", "z", "ʝ", "ʁ")) {
+        else if (base_glyph %in% c("β", "ð", "z", "ʝ", "ʁ", "ɣ")) {
             # downtack turns voiced fricative into approximant
             vec$consonantal <- "-"
             vec$sonorant <- "+"
             vec$delayedRelease <- "0"
             vec$approximant <- "+"
         }
-        else if (base_glyph %in% c("ɸ", "ʃ")) {
+        else if (base_glyph %in% c("ɸ", "ʃ", "s")) {
             # downtack turns voiceless fricative into non-sonorant-approximant?
             vec$approximant <- "+"
         }
@@ -336,7 +336,8 @@ handle_contextual_diacritics <- function(vec, base_glyph) {
             # in between central and front
             vec$front <- "0"
         }
-        else if (base_glyph %in% c("ɯ", "u", "ʊ", "ɤ", "o", "ʌ", "ɔ", "ɑ", "ɒ")) {
+        else if (base_glyph %in% c("ɯ", "u", "ʊ", "ɤ", "o", "ʌ", "ɔ", "ɑ", 
+                                   "ɒ", "w")) {
             # in between back and central
             vec$back <- "0"
         }
@@ -355,7 +356,7 @@ handle_contextual_diacritics <- function(vec, base_glyph) {
             vec$anterior <- "0"
         }
         else if (base_glyph %in% c("t", "d", "s", "z", "l", "r", "ɕ", "ʑ",
-                              "ʃ", "ʒ")) {
+                              "ʃ", "ʒ", "n")) {
             # assigning +anterior is vacuous; should this just be dental ???
             # for ʃ and ʒ this yields the same as s̪ or z̪
             vec$anterior <- "+"
@@ -382,8 +383,16 @@ handle_contextual_diacritics <- function(vec, base_glyph) {
         } else if (base_glyph %in% "ʊ") {
             vec$high <- "0"
             vec$back <- "0"
+        } else if (base_glyph %in% c("e", "ø")) {
+            vec$front <- "0"
+            vec$tense <- "0"
+        } else if (base_glyph %in% "o") {
+            vec$back <- "0"
+            vec$tense <- "0"
         } else if (base_glyph %in% "ɔ") {
             vec$back <- "0"
+        } else if (base_glyph %in% "a") {
+            vec$low <- "0"
         }
         else {
             warning(paste("GlyphID 033D (mid-centralized) used on base glyph",
@@ -401,8 +410,11 @@ handle_contextual_diacritics <- function(vec, base_glyph) {
         else if (base_glyph %in% c("i", "e")) {
             vec$front <- "0"
             vec$tense <- "0"
-        }
-        else if (base_glyph %in% c("o", "u", "w")) {
+        } 
+        else if (base_glyph %in% c("œ")) {
+            vec$front <- "0"
+        } 
+        else if (base_glyph %in% c("o", "u", "w", "ɯ")) {
             vec$back <- "0"
             vec$tense <- "0"
         }
@@ -460,6 +472,12 @@ handle_contextual_diacritics <- function(vec, base_glyph) {
         if (base_glyph %in% c("i", "ɪ", "e", "ɛ", "æ", "a", "ɨ", "ɘ", "ɜ",
                               "ɯ", "ɤ", "ʌ", "ɑ")) {
             # "less round" when already unround must mean lip-compressed (?)
+            vec$labial <- "+"
+            vec$round <- "-"
+            vec$labiodental <- "-"
+        }
+        else if (base_glyph %in% c("θ", "ɬ")) {
+            # same logic applies to consonants
             vec$labial <- "+"
             vec$round <- "-"
             vec$labiodental <- "-"
