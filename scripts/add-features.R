@@ -269,7 +269,7 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             vec$continuant <- "-"
             vec$delayedRelease <- "-"
         }
-        else if (base_glyph %in% c("æ", "a", "ɶ", "ɑ", "ɒ")) {
+        else if (base_glyph %in% c("æ", "a", "ɶ", "ɑ", "ɒ", "ɐ")) {
             # ambiguous between open and mid-open
             vec$low <- "0"
         }
@@ -277,9 +277,9 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             # this is not great...
             vec$high <- "0"
         }
-        else if (base_glyph %in% c("ɪ", "ɛ", "ɔ", "œ", "ʌ")) {
+        else if (base_glyph %in% c("ɪ", "ɛ", "ɔ", "œ", "ʌ", "ə")) {
             # ambiguous between close and mid-close (ɪ)
-            # or between mid-close and mid-open (ɛ, ɔ, œ, ʌ)
+            # or between mid-close and mid-open (ɛ, ɔ, œ, ʌ, ə)
             vec$tense <- "0"
         }
         else if (base_glyph %in% c("i", "y", "ɨ", "ʉ", "ɯ", "u")) {
@@ -293,18 +293,18 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
     }
     # downtack
     else if (vec$GlyphID %in% "031E") {
-        if (base_glyph %in% c("ŋ", "d")) {
+        if (base_glyph %in% c("ŋ", "d", "b", "ɖ", "ɡ")) {
             # downtack turns stop/nasal into "non-continuant fricative"
             vec$delayedRelease <- "+"
         }
-        else if (base_glyph %in% c("β", "ð", "z", "ʝ", "ʁ")) {
+        else if (base_glyph %in% c("β", "ð", "z", "ʝ", "ʁ", "ɣ")) {
             # downtack turns voiced fricative into approximant
             vec$consonantal <- "-"
             vec$sonorant <- "+"
             vec$delayedRelease <- "0"
             vec$approximant <- "+"
         }
-        else if (base_glyph %in% c("ɸ", "ʃ")) {
+        else if (base_glyph %in% c("ɸ", "ʃ", "s")) {
             # downtack turns voiceless fricative into non-sonorant-approximant?
             vec$approximant <- "+"
         }
@@ -312,8 +312,13 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             # assuming this means the flap doesn't hit the passive articulator
             vec$tap <- "0"
         }
-        else if (base_glyph %in% c("w")) {
+        else if (base_glyph %in% c("r") ){
+            # assuming this means the trill doesn't hit the passive articulator
+            vec$trill <- "0"
+        }
+        else if (base_glyph %in% c("w", "ɹ")) {
             # make it like an approximant version of ʊ
+            # approximants pattern together
             vec$tense <- "-"
         }
         else if (base_glyph %in% c("e", "o", "ɘ", "ɵ", "ø", "ɤ",
@@ -345,11 +350,16 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             # presumably a bilabial flap?
             vec$labiodental <- "-"
         }
+        else if (base_glyph %in% c("ɜ", "æ")) {
+            # assigning from to front vowels is vacuous?
+            vec$front <- "+"
+        }
         else if (base_glyph %in% c("ɨ", "ʉ", "ɘ", "ɵ", "ə", "ɐ", "a")) {
             # in between central and front
             vec$front <- "0"
         }
-        else if (base_glyph %in% c("ɯ", "u", "ʊ", "ɤ", "o", "ʌ", "ɔ", "ɑ", "ɒ")) {
+        else if (base_glyph %in% c("ɯ", "u", "ʊ", "ɤ", "o", "ʌ", "ɔ", "ɑ", 
+                                   "ɒ", "w")) {
             # in between back and central
             vec$back <- "0"
         }
@@ -367,8 +377,8 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             # between retroflex and alveolar
             vec$anterior <- "0"
         }
-        else if (base_glyph %in% c("t", "d", "s", "z", "l", "r", "ɕ", "ʑ",
-                              "ʃ", "ʒ")) {
+        else if (base_glyph %in% c("t", "d", "s", "z", "l", "r", "ɕ", "ʑ", 
+                                   "ʃ", "ʒ", "n")) {
             # assigning +anterior is vacuous; should this just be dental ???
             # for ʃ and ʒ this yields the same as s̪ or z̪
             vec$anterior <- "+"
@@ -395,8 +405,16 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
         } else if (base_glyph %in% "ʊ") {
             vec$high <- "0"
             vec$back <- "0"
+        } else if (base_glyph %in% c("e", "ø")) {
+            vec$front <- "0"
+            vec$tense <- "0"
+        } else if (base_glyph %in% "o") {
+            vec$back <- "0"
+            vec$tense <- "0"
         } else if (base_glyph %in% "ɔ") {
             vec$back <- "0"
+        } else if (base_glyph %in% "a") {
+            vec$low <- "0"
         }
         else {
             warning(paste("GlyphID 033D (mid-centralized) used on base glyph",
@@ -415,11 +433,14 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             vec$front <- "0"
             vec$tense <- "0"
         }
-        else if (base_glyph %in% c("o", "u", "w")) {
+        else if (base_glyph %in% c("œ")) {
+            vec$front <- "0"
+        } 
+        else if (base_glyph %in% c("o", "u", "w", "ɯ")) {
             vec$back <- "0"
             vec$tense <- "0"
         }
-        else if (base_glyph %in% "a") {
+        else if (base_glyph %in% c("a", "ə", "ʉ") ) {
             # vacuous; already central in our feat. sys.
             vec$front <- "-"
         }
@@ -459,7 +480,7 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             vec$round <- "+"
         }
         else if (base_glyph %in% c("y", "ʏ", "ø", "œ", "ɶ", "ʉ", "ɵ", "ɞ", "ɐ",
-                              "u", "ʊ", "o", "ɔ", "ɒ")) {
+                              "u", "ʊ", "o", "ɔ", "ɒ", "w")) {
             # vacuous: "more round" when already round
             vec$round <- "+"
         }
@@ -477,8 +498,14 @@ handle_contextual_diacritics <- function(vec, base_glyph, is_click=FALSE) {
             vec$round <- "-"
             vec$labiodental <- "-"
         }
+        else if (base_glyph %in% c("θ", "ɬ")) {
+            # same logic applies to consonants
+            vec$labial <- "+"
+            vec$round <- "-"
+            vec$labiodental <- "-"
+        }
         else if (base_glyph %in% c("y", "ʏ", "ø", "œ", "ɶ", "ʉ", "ɵ", "ɞ", "ɐ",
-                              "u", "ʊ", "o", "ɔ", "ɒ", "w")) {
+                              "u", "ʊ", "o", "ɔ", "ɒ", "w", "β")) {
             # "less round" when round is "ambiguously round"
             vec$round <- "0"
         }
@@ -509,14 +536,14 @@ phoible <- phoible[sort_order, ]
 ## CLEAN UP COLUMNS
 output_cols <- c("InventoryID", "Glottocode", "ISO6393", "LanguageName",
                  "SpecificDialect", "GlyphID", "Phoneme", "Allophones",
-                 "Marginal", "SegmentClass", "Source", feature_colnames)
+                 "Marginal", "SegmentClass", "Source", feature_colnames) 
 phoible <- phoible[output_cols]
 
 ## CLEAN UP ROW NAMES
 rownames(phoible) <- NULL
 
 ## SAVE
-csv_path <- file.path("..", "data", "phoible.csv")
+csv_path <- file.path("..", "data", "phoible_new_code.csv") # Changed
 write.csv(phoible, file=csv_path, row.names=FALSE, quote=TRUE, eol="\n",
           fileEncoding="UTF-8")
 
